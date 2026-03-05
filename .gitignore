@@ -1,9 +1,24 @@
-# Python cache
+# Environment
+.env
+
+# Python
 __pycache__/
-*.py[cod]
-
-# Virtual environments
+*.pyc
+*.pyo
+.venv/
 venv/
+env/
 
-# FastAPI / Uvicorn
+# SQLite database file
+*.db
+
+# Uploaded resume files
 uploads/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

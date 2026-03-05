@@ -1,21 +1,32 @@
 # Mini Resume Management API
 
-## Python Version Used
-Python 3.12.3
+A REST API built with **FastAPI** for collecting, storing, and searching candidate resume data.
+
+---
+
+## Python Version
+
+**Python 3.11+**
 
 ---
 
 ## Installation Steps
 
-1. Clone the repository:
 ```bash
+# 1. Clone the repository
 git clone https://github.com/Sadiq2678/miniresume-Mohammed-Sadiq.git
 cd miniresume-Mohammed-Sadiq
-````
 
-2. Install dependencies:
+# 2. Create and activate a virtual environment
+python -m venv venv
 
-```bash
+# On macOS/Linux:
+source venv/bin/activate
+
+# On Windows:
+venv\Scripts\activate
+
+# 3. Install dependencies
 pip install -r requirements.txt
 ```
 
@@ -23,32 +34,46 @@ pip install -r requirements.txt
 
 ## Steps to Run the Application
 
-Start the FastAPI server using:
-
 ```bash
 uvicorn main:app --reload
 ```
 
-The application will be available at:
+The API will be available at: **http://localhost:8000**  
+Interactive Swagger docs: **http://localhost:8000/docs**
 
-```
-http://127.0.0.1:8000
-```
+> No database setup needed — the app uses SQLite and creates `resume.db` automatically on first run.
 
 ---
 
-## Example API Requests and Responses
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Health check |
+| POST | `/candidates` | Upload resume + store candidate |
+| GET | `/candidates` | List candidates (supports filters) |
+| GET | `/candidates/{id}` | Get candidate by ID |
+| DELETE | `/candidates/{id}` | Delete candidate + resume file |
+
+### Filter Query Parameters for `GET /candidates`
+
+| Parameter | Type | Example |
+|-----------|------|---------|
+| `skill` | string | `?skill=python` |
+| `experience` | integer | `?experience=3` |
+| `graduation_year` | integer | `?graduation_year=2022` |
+
+---
+
+## Example API Requests & Responses
 
 ### Health Check
 
 **Request**
-
-```http
+```
 GET /health
 ```
-
-**Response**
-
+**Response** `200 OK`
 ```json
 {
   "status": "ok"
@@ -57,71 +82,64 @@ GET /health
 
 ---
 
-### Create Candidate (Upload Resume)
+### Upload Resume (Create Candidate)
 
-**Request**
-
-```http
+**Request** — multipart/form-data
+```
 POST /candidates
-Content-Type: multipart/form-data
 ```
 
-**Form Data**
+| Field | Type | Example |
+|-------|------|---------|
+| full_name | string | John Doe |
+| dob | date | 1998-05-15 |
+| contact_number | string | +91-9876543210 |
+| contact_address | string | Chennai, Tamil Nadu |
+| education | string | B.Tech Computer Science |
+| graduation_year | integer | 2020 |
+| experience_years | integer | 3 |
+| skills | string | python,django,sql |
+| resume | file | resume.pdf |
 
-```
-full_name=John Doe
-dob=1998-05-20
-contact_number=9876543210
-contact_address=Chennai, India
-education=B.Tech Computer Science
-graduation_year=2020
-experience_years=3
-skills=python,fastapi
-resume=resume.pdf
-```
-
-**Response**
-
+**Response** `201 Created`
 ```json
 {
-  "id": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11",
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "full_name": "John Doe",
-  "dob": "1998-05-20",
-  "contact_number": "9876543210",
-  "contact_address": "Chennai, India",
+  "dob": "1998-05-15",
+  "contact_number": "+91-9876543210",
+  "contact_address": "Chennai, Tamil Nadu",
   "education": "B.Tech Computer Science",
   "graduation_year": 2020,
   "experience_years": 3,
-  "skills": ["python", "fastapi"],
-  "resume_filename": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11_resume.pdf"
+  "skills": ["python", "django", "sql"],
+  "resume_filename": "a1b2c3d4-e5f6-7890-abcd-ef1234567890_resume.pdf"
 }
 ```
 
 ---
 
-### List Candidates (With Filters)
+### List Candidates with Filters
 
 **Request**
-
-```http
+```
 GET /candidates?skill=python&experience=3
 ```
 
-**Response**
-
+**Response** `200 OK`
 ```json
 [
   {
-    "id": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11",
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "full_name": "John Doe",
-    "dob": "1998-05-20",
-    "contact_number": "9876543210",
-    "contact_address": "Chennai, India",
+    "dob": "1998-05-15",
+    "contact_number": "+91-9876543210",
+    "contact_address": "Chennai, Tamil Nadu",
     "education": "B.Tech Computer Science",
     "graduation_year": 2020,
     "experience_years": 3,
-    "skills": ["python", "fastapi"],
-    "resume_filename": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11_resume.pdf"
+    "skills": ["python", "django", "sql"],
+    "resume_filename": "a1b2c3d4-e5f6-7890-abcd-ef1234567890_resume.pdf"
   }
 ]
 ```
@@ -131,26 +149,22 @@ GET /candidates?skill=python&experience=3
 ### Get Candidate by ID
 
 **Request**
-
-```http
-GET /candidates/8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11
+```
+GET /candidates/a1b2c3d4-e5f6-7890-abcd-ef1234567890
 ```
 
-**Response**
-
+**Response** `200 OK`
 ```json
 {
-  "id": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11",
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "full_name": "John Doe",
-  "dob": "1998-05-20",
-  "contact_number": "9876543210",
-  "contact_address": "Chennai, India",
-  "education": "B.Tech Computer Science",
-  "graduation_year": 2020,
-  "experience_years": 3,
-  "skills": ["python", "fastapi"],
-  "resume_filename": "8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11_resume.pdf"
+  ...
 }
+```
+
+**Not found** `404`
+```json
+{ "detail": "Candidate not found" }
 ```
 
 ---
@@ -158,16 +172,32 @@ GET /candidates/8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11
 ### Delete Candidate
 
 **Request**
-
-```http
-DELETE /candidates/8c2e9c6b-1c2a-4e8b-9a3d-7b6c9e2f4a11
+```
+DELETE /candidates/a1b2c3d4-e5f6-7890-abcd-ef1234567890
 ```
 
-**Response**
-
+**Response** `200 OK`
 ```json
-{
-  "message": "Candidate and resume deleted successfully"
-}
+{ "message": "Candidate deleted successfully" }
+```
 
+---
 
+## Project Structure
+
+```
+miniresume-your-full-name/
+├── main.py            # All routes, DB models, and app logic
+├── requirements.txt   # Python dependencies
+├── README.md          # This file
+├── .gitignore
+└── uploads/           # Resume files (auto-created, git-ignored)
+```
+
+---
+
+## Notes
+
+- Resume files (PDF/DOC/DOCX) are saved in the `uploads/` folder.
+- The SQLite database (`resume.db`) is auto-created — no setup required.
+- Skills are stored in lowercase and matched case-insensitively.
